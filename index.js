@@ -24,7 +24,6 @@ inquirer
             message: "Enter Manager name: ",
             name: "user",
           },
-
           {
             type: "input",
             message: "Enter manger Id number: ",
@@ -43,6 +42,7 @@ inquirer
         ])
         .then((data) => createManger(data));
     }
+
     if (response.role === "Engineer") {
       inquirer
         .prompt([
@@ -70,6 +70,7 @@ inquirer
         ])
         .then((data) => createEngineer(data));
     }
+
     if (response.role === "Intern") {
       inquirer
         .prompt([
@@ -117,7 +118,6 @@ function createEngineer(response) {
   const gitHub = response.gitHub;
   //object
   const engineers = new Engineer(name, id, email, gitHub);
-
   employeePage(engineers);
 }
 function createIntern(response) {
@@ -127,10 +127,7 @@ function createIntern(response) {
   const email = response.email;
   const school = response.school;
   //object
-  const interns = new Intern(school);
-  interns.name = name;
-  interns.id = id;
-  interns.email = email;
+  const interns = new Intern(name, id, email, school);
   employeePage(interns);
 }
 
@@ -177,8 +174,15 @@ function employeePage(newEmployee) {
       <title>Employee Managment</title>
   </head>`;
   body = `<body>
+  <header style="height: 5rem"> My Team</header>
   <div class="container">
-  <div class="card" style="width: 18rem">
+  <div class="card" style="
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  font-size: 3rem;
+  background: rebeccapurple;
+">
     <div class="card-body">
       <h5 class="name card-title">Name: ${name}</h5>
       <h6 class="role card-subtitle mb-2 text-muted">Role: ${role}</h6>
