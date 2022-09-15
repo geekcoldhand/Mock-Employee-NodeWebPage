@@ -5,101 +5,132 @@ const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Intern = require("./lib/Intern");
 const Engineer = require("./lib/Engineer");
+const { setFlagsFromString } = require("v8");
 
-inquirer
-  .prompt([
-    {
-      type: "list",
-      message: "Pick a role: ",
-      name: "role",
-      choices: ["Manager", "Engineer", "Intern"],
-    },
-  ])
-  .then((response) => {
-    if (response.role === "Manager") {
-      inquirer
-        .prompt([
-          {
-            type: "input",
-            message: "Enter Manager name: ",
-            name: "user",
-          },
-          {
-            type: "input",
-            message: "Enter manger Id number: ",
-            name: "id",
-          },
-          {
-            type: "input",
-            message: "Enter your email: ",
-            name: "email",
-          },
-          {
-            type: "input",
-            message: "Enter office number",
-            name: "office",
-          },
-        ])
-        .then((data) => createManger(data));
-    }
+const staff = [];
 
-    if (response.role === "Engineer") {
-      inquirer
-        .prompt([
-          {
-            type: "input",
-            message: "Enter name: ",
-            name: "user",
-          },
+function start() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Would you like to make a new Employee?",
+        name: "newEmployee",
+      },
+    ])
+    .then((data) => {
+      if (data.newEmployee === "yes") {
+        newPerson();
+      } else {
+        //send array to end file makers
+        employeePage(...staff);
+      }
+    });
+}
+function newPerson() {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "Pick a role: ",
+        name: "role",
+        choices: ["Manager", "Engineer", "Intern"],
+      },
+    ])
+    .then((response) => {
+      if (response.role === "Manager") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "Enter Manager name: ",
+              name: "user",
+            },
+            {
+              type: "input",
+              message: "Enter manger Id number: ",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "Enter your email: ",
+              name: "email",
+            },
+            {
+              type: "input",
+              message: "Enter office number",
+              name: "office",
+            },
+          ])
+          .then((data) => {
+            createManger(data);
+            start();
+          });
+      }
 
-          {
-            type: "input",
-            message: "Enter Id number: ",
-            name: "id",
-          },
-          {
-            type: "input",
-            message: "Enter your email: ",
-            name: "email",
-          },
-          {
-            type: "input",
-            message: "Enter your gitHub",
-            name: "github",
-          },
-        ])
-        .then((data) => createEngineer(data));
-    }
+      if (response.role === "Engineer") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "Enter name: ",
+              name: "user",
+            },
 
-    if (response.role === "Intern") {
-      inquirer
-        .prompt([
-          {
-            type: "input",
-            message: "Enter name: ",
-            name: "user",
-          },
+            {
+              type: "input",
+              message: "Enter Id number: ",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "Enter your email: ",
+              name: "email",
+            },
+            {
+              type: "input",
+              message: "Enter your gitHub",
+              name: "github",
+            },
+          ])
+          .then((data) => {
+            createEngineer(data);
+            start();
+          });
+      }
 
-          {
-            type: "input",
-            message: "Enter Id number: ",
-            name: "id",
-          },
-          {
-            type: "input",
-            message: "Enter your email: ",
-            name: "email",
-          },
-          {
-            type: "input",
-            message: "Enter your school",
-            name: "school",
-          },
-        ])
-        .then((data) => createIntern(data));
-    }
-  });
+      if (response.role === "Intern") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "Enter name: ",
+              name: "user",
+            },
 
+            {
+              type: "input",
+              message: "Enter Id number: ",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "Enter your email: ",
+              name: "email",
+            },
+            {
+              type: "input",
+              message: "Enter your school",
+              name: "school",
+            },
+          ])
+          .then((data) => {
+            createIntern(data);
+            start();
+          });
+      }
+    });
+}
 function createManger(response) {
   //data
   const name = response.user;
@@ -108,7 +139,7 @@ function createManger(response) {
   const office = response.office;
   //object
   const managers = new Manager(name, id, email, office);
-  employeePage(managers);
+  staff.push(managers);
 }
 function createEngineer(response) {
   //data
@@ -118,7 +149,7 @@ function createEngineer(response) {
   const gitHub = response.gitHub;
   //object
   const engineers = new Engineer(name, id, email, gitHub);
-  employeePage(engineers);
+  staff.push(engineers);
 }
 function createIntern(response) {
   //data
@@ -128,7 +159,7 @@ function createIntern(response) {
   const school = response.school;
   //object
   const interns = new Intern(name, id, email, school);
-  employeePage(interns);
+  staff.push(interns);
 }
 
 function createEmployee(response) {
@@ -138,19 +169,10 @@ function createEmployee(response) {
   const email = response.email;
   //object
   const employees = new Employee(name, id, email);
-  employeePage(employees);
+  staff.push(employees);
 }
 
 function employeePage(newEmployee) {
-  let name = newEmployee.getName();
-  let id = newEmployee.getId();
-  let email = newEmployee.getEmail();
-  let role = newEmployee.getRole();
-  let extraInfo = "";
-  if (role === "Manager") extraInfo = "Office: " + newEmployee.officeNum;
-  if (role === "Intern") extraInfo = "School: " + newEmployee.school;
-  if (role === "Engineer") extraInfo = "Git: " + newEmployee.gitHub;
-
   head = `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -182,20 +204,34 @@ function employeePage(newEmployee) {
   justify-content: center;
   font-size: 3rem;
   background: rebeccapurple;
-">
-    <div class="card-body">
-      <h5 class="name card-title">Name: ${name}</h5>
-      <h6 class="role card-subtitle mb-2 text-muted">Role: ${role}</h6>
-      <p class="card-text">Id: ${id}</p>
-      <a href="#" class="card-link">Email: ${email} </a>
-      <p class="card-text">${extraInfo}</p>
-    </div>
-  </div>
-</div>
+">`;
+
+  bodyEnd = `</div>
   </body>
   </html>`;
 
-  fs.writeFile("employee.html", `${head}${body}`, (err) => {
+  addContent = ``;
+  for (const index in newEmployee) {
+    let name = newEmployee.getName()[index];
+    let id = newEmployee.getId()[index];
+    let email = newEmployee.getEmail()[index];
+    let role = newEmployee.getRole()[index];
+    let extraInfo = "";
+    if (role === "Manager") extraInfo = "Office: " + newEmployee.officeNum;
+    if (role === "Intern") extraInfo = "School: " + newEmployee.school;
+    if (role === "Engineer") extraInfo = "Git: " + newEmployee.gitHub;
+
+    content += `<div class="card-body">
+    <h5 class="name card-title">Name: ${name}</h5>
+    <h6 class="role card-subtitle mb-2 text-muted">Role: ${role}</h6>
+    <p class="card-text">Id: ${id}</p>
+    <a href="#" class="card-link">Email: ${email} </a>
+    <p class="card-text">${extraInfo}</p>
+  </div>
+</div>`;
+  }
+
+  fs.writeFile("employee.html", `${head}${body}${content}${bodyEnd}`, (err) => {
     if (err) console.log(err);
     else {
       console.log("File written successfully\n");
