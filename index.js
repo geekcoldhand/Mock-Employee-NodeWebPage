@@ -13,9 +13,10 @@ function start() {
   inquirer
     .prompt([
       {
-        type: "input",
+        type: "list",
         message: "Would you like to make a new Employee?",
         name: "newEmployee",
+        choices: ["yes", "no"],
       },
     ])
     .then((data) => {
@@ -23,7 +24,7 @@ function start() {
         newPerson();
       } else {
         //send array to end file makers
-        employeePage(...staff);
+        employeePage(staff);
       }
     });
 }
@@ -173,6 +174,7 @@ function createEmployee(response) {
 }
 
 function employeePage(newEmployee) {
+  console.log("emplyee has this:", newEmployee);
   head = `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -196,32 +198,36 @@ function employeePage(newEmployee) {
       <title>Employee Managment</title>
   </head>`;
   body = `<body>
-  <header style="height: 5rem"> My Team</header>
-  <div class="container">
-  <div class="card" style="
+  <header style="
   height: 5rem;
   display: flex;
   justify-content: center;
   font-size: 3rem;
   background: rebeccapurple;
-">`;
+"> My Team</header>
+  <div class="container">`;
 
   bodyEnd = `</div>
   </body>
   </html>`;
 
-  addContent = ``;
+  let content = ``;
   for (const index in newEmployee) {
-    let name = newEmployee.getName()[index];
-    let id = newEmployee.getId()[index];
-    let email = newEmployee.getEmail()[index];
-    let role = newEmployee.getRole()[index];
+    let name = newEmployee[index].name;
+    let id = newEmployee[index].id;
+    let email = newEmployee[index].email;
+
+    let role = newEmployee[index].getRole();
+    console.log("Emp role: ", role);
+
     let extraInfo = "";
     if (role === "Manager") extraInfo = "Office: " + newEmployee.officeNum;
     if (role === "Intern") extraInfo = "School: " + newEmployee.school;
+
     if (role === "Engineer") extraInfo = "Git: " + newEmployee.gitHub;
 
-    content += `<div class="card-body">
+    content += `<div class="card">
+    <div class="card-body">
     <h5 class="name card-title">Name: ${name}</h5>
     <h6 class="role card-subtitle mb-2 text-muted">Role: ${role}</h6>
     <p class="card-text">Id: ${id}</p>
@@ -238,3 +244,5 @@ function employeePage(newEmployee) {
     }
   });
 }
+
+start();
